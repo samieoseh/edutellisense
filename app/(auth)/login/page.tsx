@@ -67,7 +67,7 @@ export default function LoginPage() {
               name="email"
               render={({ field }) => (
                 <FormItem className="mt-[1.12rem]">
-                  <FormLabel className="text-xs">Email</FormLabel>
+                  <FormLabel className="text-sm">Email</FormLabel>
                   <FormControl>
                     <Input type="email" className="outline-none" {...field} />
                   </FormControl>
@@ -80,7 +80,7 @@ export default function LoginPage() {
               name="password"
               render={({ field }) => (
                 <FormItem className="mb-0">
-                  <FormLabel className="text-xs">Password</FormLabel>
+                  <FormLabel className="text-sm">Password</FormLabel>
                   <FormControl>
                     <div className="relative">
                       <Input
@@ -106,7 +106,7 @@ export default function LoginPage() {
           <div className="flex justify-end">
             <Link
               href=""
-              className="text-right mt-[0.3rem] text-xs text-primary"
+              className="text-right mt-[0.3rem] text-sm text-primary"
             >
               Forgot Password?
             </Link>
@@ -118,21 +118,21 @@ export default function LoginPage() {
       </Form>
       <div className="flex items-center justify-between w-full mt-[1.87rem]">
         <span className="w-[7.6rem] bg-input h-[1px]"></span>
-        <p className="text-xs">Or</p>
+        <p className="text-sm">Or</p>
         <span className="w-[7.6rem] bg-input h-[1px]"></span>
       </div>
-      <Button variant="outline" className="w-full mt-[1.25rem] text-xs">
+      <Button variant="outline" className="w-full mt-[1.25rem] text-sm">
         <Image src="/google.png" alt="google logo" height={24} width={24} />
         Sign in with Google
       </Button>
-      <Button variant="outline" className="w-full mt-[1.12rem] text-xs">
+      <Button variant="outline" className="w-full mt-[1.12rem] text-sm">
         <Image src="/apple.png" alt="google logo" height={24} width={24} />
         Sign in with Apple
       </Button>
-      <p className="mt-[1.62rem] text-xs">
+      <p className="mt-[1.62rem] text-sm">
         Do not have an accout?{" "}
         <span>
-          <Button variant="link" className="p-0 text-xs">
+          <Button variant="link" className="p-0 text-sm">
             Sign Up
           </Button>
         </span>
