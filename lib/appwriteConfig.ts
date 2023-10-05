@@ -6,6 +6,6 @@ const databases = new Databases(client);
 
 client
   .setEndpoint("https://cloud.appwrite.io/v1")
-  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID);
+  .setProject(process.env.NEXT_PUBLIC_APPWRITE_PROJECT_ID ?? "undefined");
 
 export { account, databases };
