@@ -7,6 +7,7 @@ import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 import {
   Form,
   FormControl,
@@ -16,28 +17,26 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-import { formSchema } from "@/constants/constants";
+import { apiState, signupFormSchema } from "@/constants/constants";
 import { useAuth } from "@/hooks/useAuth";
-import { googleAuth } from "@/lib/auth";
+import { useRouter } from "next/navigation";
 
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const { signup, googleAuth } = useAuth();
+  const { signup, status } = useAuth();
+  const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof signupFormSchema>>({
+    resolver: zodResolver(signupFormSchema),
     defaultValues: {
+      name: "Samuel Oseh",
       email: "samueloseh007@gmail.com",
       password: "StrongPass@123",
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    signup(values);
-  };
-
-  const handleGoogleAuth = () => {
-    googleAuth();
+  const onSubmit = (values: z.infer<typeof signupFormSchema>) => {
+    signup(values, () => router.push("/plan"));
   };
 
   return (
@@ -47,6 +46,19 @@ export default function SignUpPage() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
           <div className="space-y-[1.12rem]">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem className="mt-[1.12rem]">
+                  <FormLabel className="text-sm">Username</FormLabel>
+                  <FormControl>
+                    <Input type="text" className="outline-none" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="email"
@@ -88,28 +100,21 @@ export default function SignUpPage() {
               )}
             />
           </div>
-          <Button className="w-full mt-[0.75rem]" type="submit">
-            Sign Up
+          <Button
+            className="w-full mt-[0.75rem]"
+            type="submit"
+            disabled={status === apiState.LOADING ? true : false}
+          >
+            {status === apiState.LOADING ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing up...
+              </>
+            ) : (
+              "Sign up"
+            )}
           </Button>
         </form>
       </Form>
-      <div className="flex items-center justify-between w-full mt-[1.87rem]">
-        <span className="w-[7.6rem] bg-input h-[1px]"></span>
-        <p className="text-sm">Or</p>
-        <span className="w-[7.6rem] bg-input h-[1px]"></span>
-      </div>
-      <Button
-        variant="outline"
-        className="w-full mt-[1.25rem] text-sm"
-        onClick={handleGoogleAuth}
-      >
-        <Image src="/google.png" alt="google logo" height={24} width={24} />
-        Sign up with Google
-      </Button>
-      <Button variant="outline" className="w-full mt-[1.12rem] text-sm">
-        <Image src="/apple.png" alt="google logo" height={24} width={24} />
-        Sign up with Apple
-      </Button>
       <p className="mt-[1.62rem] text-sm">
         Already have an accout?{" "}
         <span>

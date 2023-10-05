@@ -16,7 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-import { authState, formSchema } from "@/constants/constants";
+import { apiState, loginFormSchema } from "@/constants/constants";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -24,23 +24,24 @@ import { useRouter } from "next/navigation";
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const { login, status, error, googleAuth } = useAuth();
+  const router = useRouter();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
       email: "samueloseh007@gmail.com",
       password: "StrongPass@123",
     },
   });
-  const router = useRouter();
 
-  const onSubmit = (formData: z.infer<typeof formSchema>) => {
+  const onSubmit = (formData: z.infer<typeof loginFormSchema>) => {
     login(formData, () => router.push("/dashboard"));
   };
 
   const handleGoogleAuth = () => {
-    googleAuth();
+    googleAuth("/dashboard", "/login");
   };
+
   return (
     <Container className="w-[390px] px-[3.25rem] ">
       <Image height={55} width={117} src="./Logo.svg" alt="logo" />
@@ -111,7 +112,7 @@ export default function LoginPage() {
             )}
           </Button>
           <p className="mt-1 text-destructive text-xs text-center">
-            {status === authState.ERROR ? error.message : ""}
+            {status === apiState.ERROR ? error.message : ""}
           </p>
         </form>
       </Form>
@@ -135,9 +136,9 @@ export default function LoginPage() {
       <p className="mt-[1.62rem] text-sm">
         Do not have an accout?{" "}
         <span>
-          <Button variant="link" className="p-0 text-sm">
+          <Link href="/signup" className="p-0 text-sm text-primary">
             Sign up
-          </Button>
+          </Link>
         </span>
       </p>
     </Container>
