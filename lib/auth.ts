@@ -65,8 +65,9 @@ export const googleAuth = () => {
   const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
   const redirectDomain =
     environment === "development"
-      ? "http://locahost:3000"
+      ? "http://localhost:3000"
       : "https//edutellisense.vercel.app";
+  console.log(redirectDomain);
   try {
     account.createOAuth2Session(
       "google",
