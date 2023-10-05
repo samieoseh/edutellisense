@@ -5,7 +5,7 @@ type Props = {
 const Container = ({ children, className }: Props) => {
   return (
     <div
-      className={`w-[390px] mx-auto mt-8 flex items-center justify-center flex-col ${className}`}
+      className={`mx-auto mt-8 flex items-center justify-center flex-col ${className}`}
     >
       {children}
     </div>

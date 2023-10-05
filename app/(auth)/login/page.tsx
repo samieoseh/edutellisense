@@ -16,47 +16,33 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Link from "next/link";
-
-const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
-const passwordRegex =
-  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@#$!%^&])[A-Za-z\d@#$!%^&*]{8,}$/;
-
-const formSchema = z.object({
-  email: z
-    .string()
-    .min(2, {
-      message: "Email must be at least 2 characters",
-    })
-    .regex(emailRegex, "Email must be of the format 'test@example.com'"),
-
-  password: z
-    .string()
-    .min(8, {
-      message: "password must be at least 8 characters",
-    })
-    .regex(
-      passwordRegex,
-      "Password must contain at least 8 characters, an uppercase and a symbol"
-    ),
-});
+import { authState, formSchema } from "@/constants/constants";
+import { useAuth } from "@/hooks/useAuth";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const { login, status, error, googleAuth } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: "samueloseh007@gmail.com",
+      password: "StrongPass@123",
     },
   });
+  const router = useRouter();
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  const onSubmit = (formData: z.infer<typeof formSchema>) => {
+    login(formData, () => router.push("/dashboard"));
   };
 
+  const handleGoogleAuth = () => {
+    googleAuth();
+  };
   return (
-    <Container className="px-[3.25rem] ">
+    <Container className="w-[390px] px-[3.25rem] ">
       <Image height={55} width={117} src="./Logo.svg" alt="logo" />
       <h1 className="text-[1.5rem] mt-[2.25rem]">Welcome Back!</h1>
       <Form {...form}>
@@ -105,15 +91,28 @@ export default function LoginPage() {
           </div>
           <div className="flex justify-end">
             <Link
-              href=""
+              href="/"
               className="text-right mt-[0.3rem] text-sm text-primary"
             >
               Forgot Password?
             </Link>
           </div>
-          <Button className="w-full mt-[0.75rem]" type="submit">
-            Sign in
+          <Button
+            className="w-full mt-[0.75rem]"
+            type="submit"
+            disabled={status === "loading" ? true : false}
+          >
+            {status === "loading" ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Signing in...
+              </>
+            ) : (
+              "Sign in"
+            )}
           </Button>
+          <p className="mt-1 text-destructive text-xs text-center">
+            {status === authState.ERROR ? error.message : ""}
+          </p>
         </form>
       </Form>
       <div className="flex items-center justify-between w-full mt-[1.87rem]">
@@ -121,7 +120,11 @@ export default function LoginPage() {
         <p className="text-sm">Or</p>
         <span className="w-[7.6rem] bg-input h-[1px]"></span>
       </div>
-      <Button variant="outline" className="w-full mt-[1.25rem] text-sm">
+      <Button
+        variant="outline"
+        className="w-full mt-[1.25rem] text-sm"
+        onClick={handleGoogleAuth}
+      >
         <Image src="/google.png" alt="google logo" height={24} width={24} />
         Sign in with Google
       </Button>
@@ -133,7 +136,7 @@ export default function LoginPage() {
         Do not have an accout?{" "}
         <span>
           <Button variant="link" className="p-0 text-sm">
-            Sign Up
+            Sign up
           </Button>
         </span>
       </p>
