@@ -1,8 +1,12 @@
+"use client";
 import Container from "@/components/Container";
 import { Button } from "@/components/ui/button";
+import { handlePlanChange } from "@/lib/utils";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 export default function PricingPlanPage() {
+  const router = useRouter();
   return (
     <Container className="w-[90%]">
       <div className="flex justify-start w-full">
@@ -15,7 +19,7 @@ export default function PricingPlanPage() {
         {/* Basic Plan */}
         <div className="w-[16rem] shadow-lg rounded-lg mt-[3.38rem]">
           <h3 className="text-center font-bold uppercase text-[1rem] mt-[1.75rem]">
-            Basic
+            Free
           </h3>
           <div className=" mx-[1.37rem]">
             <p className="text-xs mt-[0.44rem]">
@@ -46,7 +50,15 @@ export default function PricingPlanPage() {
                 <p className="ml-2 text-sm">Basic analytics</p>
               </div>
             </div>
-            <Button className="w-full mt-[1.3rem] mb-8">Get Started</Button>
+            <Button
+              className="w-full mt-[1.3rem] mb-8"
+              onClick={() => {
+                handlePlanChange("free");
+                router.push("/dashboard");
+              }}
+            >
+              Get Started
+            </Button>
           </div>
         </div>
         {/* Standard Plan */}
@@ -84,7 +96,15 @@ export default function PricingPlanPage() {
                 <p className="ml-2 text-sm">Advanced analytics</p>
               </div>
             </div>
-            <Button className="w-full mt-[1.3rem] mb-8">Get Started</Button>
+            <Button
+              className="w-full mt-[1.3rem] mb-8"
+              onClick={() => {
+                handlePlanChange("standard");
+                router.push("/dashboard");
+              }}
+            >
+              Get Started
+            </Button>
           </div>
         </div>
         {/* Premium Plan */}
@@ -99,7 +119,7 @@ export default function PricingPlanPage() {
           <h3 className="z-40 text-center font-bold uppercase text-[1rem] mt-[1.75rem] text-white">
             Premium
           </h3>
-          <div className=" mx-[1.37rem] z-40">
+          <div className=" mx-[1.37rem] relative z-40">
             <p className="text-xs mt-[0.44rem] text-white">
               Perfect for large business that have hige amount of data
             </p>
@@ -153,7 +173,15 @@ export default function PricingPlanPage() {
                 <p className="ml-2 text-sm text-white">Advanced analytics</p>
               </div>
             </div>
-            <Button className="w-full mt-[1.3rem] mb-8">Get Started</Button>
+            <Button
+              className="w-full mt-[1.3rem] mb-8 z-40"
+              onClick={() => {
+                handlePlanChange("premium");
+                router.push("/dashboard");
+              }}
+            >
+              Get Started
+            </Button>
           </div>
           <Image
             src="/flare 2.png"

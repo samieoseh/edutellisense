@@ -1,23 +1,49 @@
-import { UserProps } from "@/typings";
 import { setCookie, deleteCookie } from "cookies-next";
 import uuidv4 from "uuid4";
 import { account } from "./appwriteConfig";
 import { Dispatch, SetStateAction } from "react";
-import { authState } from "@/constants/constants";
+import { apiState } from "@/constants/constants";
+import { storeToDatabase } from "./utils";
 
-export const signup = async ({ email, password }: UserProps) => {
+export const signup = async (
+  email: string,
+  password: string,
+  name: string,
+  setStatus: Dispatch<SetStateAction<string>>,
+  setError: Dispatch<
+    SetStateAction<{
+      type: string;
+      message: string;
+    }>
+  >,
+  onSuccess: () => void
+) => {
   try {
+    setStatus(apiState.LOADING);
     const userId = uuidv4();
-    await account.create(userId, email, password, email);
+    await account.create(userId, email, password, name);
     await account.createEmailSession(email, password);
+    setStatus(apiState.SUCCESS);
+    setCookie("auth", true, { maxAge: 60 * 6 * 24 });
+    storeToDatabase(userId);
+    onSuccess();
   } catch (error: any) {
+    setStatus(apiState.ERROR);
     if (error.type === "user_already_exists") {
-      console.log("User with provided email already exists");
+      setError({
+        type: "user_already_exists",
+        message: "User with provided email already exists",
+      });
     } else if (error.type === "general_rate_limit_exceeded") {
-      console.log("Api Limit Exceeded, try again in one hour");
+      setError({
+        type: "general_rate_limit_exceeded",
+        message: "Api Limit Exceeded, try again in one hour",
+      });
     } else {
-      console.log(error);
-      console.log("An error occured, please contact tech support");
+      setError({
+        type: error.type,
+        message: "An error occured, please contact tech support",
+      });
     }
   }
 };
@@ -35,13 +61,13 @@ export const login = async (
   onSuccess: () => void
 ) => {
   try {
-    setStatus(authState.LOADING);
+    setStatus(apiState.LOADING);
     await account.createEmailSession(email, password);
     setCookie("auth", true, { maxAge: 60 * 60 * 60 * 6 * 24 });
-    setStatus(authState.SUCCESS);
+    setStatus(apiState.SUCCESS);
     onSuccess();
   } catch (error: any) {
-    setStatus(authState.ERROR);
+    setStatus(apiState.ERROR);
     if (error.type === "user_invalid_credentials") {
       setError({
         type: error.type,
@@ -61,23 +87,25 @@ export const login = async (
   }
 };
 
-export const googleAuth = () => {
+export const googleAuth = (success: string, failure: string) => {
   const environment = process.env.NEXT_PUBLIC_ENVIRONMENT;
   const redirectDomain =
-    environment === "development" ? "http://localhost:3000" : "*.vercel.app";
+    environment === "development"
+      ? "http://localhost:3000"
+      : "https://edutellisense.vercel.app";
   console.log(redirectDomain);
   try {
     account.createOAuth2Session(
       "google",
-      `${redirectDomain}/dashboard`,
-      `${redirectDomain}/login`
+      `${redirectDomain}${success}`,
+      `${redirectDomain}${failure}`
     );
-    setCookie("auth", true, { maxAge: 60 * 60 * 60 * 6 * 24 });
+    setCookie("auth", true, { maxAge: 60 * 6 * 24 });
   } catch (error: any) {
     console.log(error.type);
   }
 };
 export const logout = async () => {
   await account.deleteSession("current");
-  deleteCookie("auth");
+  deleteCookie("auth", { maxAge: 60 * 6 * 24 });
 };
